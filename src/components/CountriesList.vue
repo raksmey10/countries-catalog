@@ -7,7 +7,6 @@
       <el-form :inline="true" align="center">
         <el-form-item>
           <el-input v-model="countryName" clearable @clear="handleClear" placeholder="Country Name..." />
-          <!--            <el-input v-model="countryName" clearable />-->
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="onSubmit" :loading="loadingBtn" :disabled="disabled">Search</el-button>
@@ -21,7 +20,6 @@
           :default-sort="{ prop: 'name.official', order: 'ascending' }"
           style="width: 100%"
       >
-
         <el-table-column prop="name.official" label="Country Name" min-width="200" sortable>
           <template #default="scope">
         <span>
@@ -29,7 +27,7 @@
         </span>
             &nbsp;
             <span>
-          <el-link type="primary">
+          <el-link type="primary" @click="info(scope.row)">
             {{ scope.row.name.official }}
           </el-link>
         </span>
@@ -42,7 +40,6 @@
 
         <el-table-column prop="altSpellings.0" label="Alternative">
           <template #default="scope">
-
             <el-popover effect="dark" trigger="hover" placement="left" width="auto">
               <template #default>
                 <div v-for="item in scope.row.altSpellings" :key="item[0]">
@@ -63,7 +60,6 @@
             <el-tag>{{ scope.row.idd.root }}</el-tag>
           </template>
         </el-table-column>
-
       </el-table>
       <br />
       <br />
@@ -80,13 +76,26 @@
     </el-col>
     <el-col :span="4"></el-col>
   </el-row>
+
+  <el-dialog
+      v-model="dialogVisible"
+      title="Other Information"
+      width="30%"
+      :show-cancel="false"
+  >
+    <CountriesInfo :countryInfo="countryInfo" />
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
   import { ref, reactive, computed } from 'vue';
   import { Search } from '@element-plus/icons-vue'
   import { ElMessage } from 'element-plus'
+  import CountriesInfo from './CountriesInfo.vue'
 
+  // define ref
+  const countryInfo = ref({})
+  const dialogVisible = ref(false)
   const endPoint = ref('')
   const keywords = ref('')
   const countryName = ref('')
@@ -95,7 +104,7 @@
   const list = ref([])
   const currentPageList = ref([])
   const PagePagination = reactive({
-    pageSize: 10, // numbers of items per page
+    pageSize: 25, // numbers of items per page
     pageNum: 1, // current page number
     total: 0 // total number of items
   })
@@ -124,13 +133,6 @@
         PagePagination.total = 0
         list.value = []
       }
-      // else {
-      // loadingList.value = false
-      // loadingBtn.value = false
-      // PagePagination.pageNum = 1
-      // list.value = data
-      // getCurrentPageList()
-      // }
       loadingList.value = false
       loadingBtn.value = false
       PagePagination.pageNum = 1
@@ -138,6 +140,7 @@
       getCurrentPageList()
     })
   }
+  // initiate countries list
   getList()
 
   // handle data pagination fetched from api
@@ -175,8 +178,17 @@
     getList(keywords.value)
   }
 
+  // disable search button when search box is empty
   const disabled = computed(() => !countryName.value);
+
+  // clear value from search box
   const handleClear = () => {
     getList()
+  }
+
+  // get country info
+  const info = (item: object) => {
+    countryInfo.value = item
+    dialogVisible.value = true
   }
 </script>
