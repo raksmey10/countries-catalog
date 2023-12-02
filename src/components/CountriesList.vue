@@ -20,17 +20,26 @@
           :default-sort="{ prop: 'name.official', order: 'ascending' }"
           style="width: 100%"
       >
+        <el-table-column
+            type="index"
+            label="&numero;"
+        />
+
         <el-table-column prop="name.official" label="Country Name" min-width="200" sortable>
           <template #default="scope">
-        <span>
-          <img :src="scope.row.flags.png" alt="country flags" style="width:25px">
-        </span>
-            &nbsp;
             <span>
-          <el-link type="primary" @click="info(scope.row)">
-            {{ scope.row.name.official }}
-          </el-link>
-        </span>
+              <img :src="scope.row.flags.png" alt="country flags" style="width:25px">
+            </span>
+            &nbsp;
+            <el-tooltip
+                effect="light"
+                :content="scope.row.name.official"
+                placement="right"
+            >
+              <span class="link-type ellipsis-wrapper" @click="info(scope.row)">
+                {{ scope.row.name.official }}
+              </span>
+            </el-tooltip>
           </template>
         </el-table-column>
 
@@ -192,3 +201,25 @@
     dialogVisible.value = true
   }
 </script>
+
+<style lang="scss" scoped>
+  .ellipsis-wrapper {
+    position: absolute;
+    max-width: calc(100% - 5rem);
+    line-height: calc(2.5rem - 1px);
+    top: 0;
+    left: 3rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .link-type {
+    color: #333333;
+    cursor: pointer;
+
+    &:hover {
+      color: rgb(32, 160, 255);
+    }
+  }
+</style>

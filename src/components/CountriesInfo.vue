@@ -66,7 +66,7 @@
    border-collapse:separate;
    border-spacing: 0 1em;
 
-   td.bold-text{
+   td.bold-text {
      font-weight: bold;
      padding-right: 1em;
    }
